@@ -1,0 +1,161 @@
+#include "Control.h"
+
+
+CControl::CControl(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY, int Kaestchenbreite,  float Waermeausbreitung, float Toptemp) : Hitzeobjekt(SCREEN_WIDTH, SCREEN_HEIGHT, KaestchenXundY, Kaestchenbreite, Waermeausbreitung, Toptemp)
+{
+	t=0;
+	quit = false;
+	fillRect.x=0;
+	fillRect.y=0;
+	fillRect.h=0;
+	fillRect.w=0;
+	gedrueckt = false;
+	startzeit = omp_get_wtime();
+}
+
+
+CControl::~CControl(void)
+{
+}
+
+void CControl::handle(CView &Viewobjekt, float KaestchenXundY)
+{
+	Mainloop(Viewobjekt, KaestchenXundY);
+}
+
+void CControl::Mainloop(CView &Viewobjekt, float KaestchenXundY)
+{
+
+    fstream f;
+    f.open("test.dat", ios::out);
+    f << "Start Rechnung\t\tEnde Rechnung" << endl;
+    f.close();
+
+	//Solange die Applikation läuft
+	while( !quit )
+	{
+		//Bearbeite die Elemente in der Elementschlange
+		while( SDL_PollEvent( &e ) != 0 )
+		{
+			//Benutzer möchte das Programm beenden
+			if( e.type == SDL_QUIT )
+			{
+				quit = true;
+			}
+			else if( e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP ) // Events 				für die Maus, wurde sie bewegt, wurde sie gedrückt, oder wurde die gedrückte Taste losgelassen?
+			{
+				//Bekommen der Mausposition
+				int x, y;
+				SDL_GetMouseState( &x, &y );
+
+				switch( e.type )
+				{
+					/*case SDL_MOUSEMOTION:						
+					mCurrentSprite = BUTTON_SPRITE_MOUSE_OVER_MOTION;
+					break;*/
+			
+					//Maustaste gedrückt
+					case SDL_MOUSEBUTTONDOWN:
+					gedrueckt = true;
+					break;
+				
+					//Maustaste losgelassen
+					case SDL_MOUSEBUTTONUP:
+					gedrueckt = false;
+					break;
+				}
+
+				//Maus ist links vom Kästchen
+				#pragma omp parallel for
+				for(int i = 0; i < Hitzeobjekt.getRedbox(); i++)
+				{
+					if( x < Hitzeobjekt.getXVector(i))
+					{}
+				
+					//Maus ist rechts vom Kästchen
+					else if( x > Hitzeobjekt.getXVector(i) + Hitzeobjekt.getBreite() )
+					{}
+				
+					//Maus ist über den Kästchen
+		 			else if( y < Hitzeobjekt.getYVector(i) )
+					{}
+	
+					//Maus unter dem Kästchen
+					else if( y > Hitzeobjekt.getYVector(i) + Hitzeobjekt.getBreite() )
+					{}
+		
+					//Maus ist im Kästchen
+					else
+					{
+						if(gedrueckt == true)
+						{
+							Hitzeobjekt.setValue(i, Hitzeobjekt.getTopTemp());
+						}
+					}			
+				}
+			}
+		}
+		
+		if(t%25 == 0)
+		{
+			//Übermalen des letzten Bildes
+			ErasePicture(Viewobjekt.oRenderer);
+
+			CalculateSquares(Viewobjekt);
+
+			//Update des Bildschirms
+			SDL_RenderPresent( Viewobjekt.oRenderer );
+		}
+		
+		f.open("test.dat", ios::app);
+		f << omp_get_wtime() - startzeit << "\t\t";
+		f.close();		
+
+		Hitzeobjekt.Newvalue(KaestchenXundY);	
+		
+		f.open("test.dat", ios::app);
+		f << omp_get_wtime() - startzeit << endl;
+		f.close();
+
+		if(t == 1000)
+		{
+			quit = true;
+		}
+		else
+		{
+			t++;
+		}
+	}
+}
+
+void CControl::ErasePicture (SDL_Renderer *Renderer)
+{
+	// Bild löschen, mit weiß übermalen
+	SDL_SetRenderDrawColor( Renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear( Renderer );
+}
+
+void CControl::CalculateSquares(CView &Viewobjekt)
+{
+	for(int i = 0; i < Hitzeobjekt.getRedbox(); i++)
+	{
+		//Zum malen der Kästchen		
+		fillRect.x = Hitzeobjekt.getXVector(i);
+		fillRect.y = Hitzeobjekt.getYVector(i);
+		fillRect.w = Hitzeobjekt.getBreite();
+		fillRect.h = Hitzeobjekt.getBreite();
+		SDL_SetRenderDrawColor( Viewobjekt.oRenderer, Hitzeobjekt.getValue(i), 0x00, 0x00, 0xFF );		
+		SDL_RenderFillRect( Viewobjekt.oRenderer, &fillRect );
+	}
+
+	for(int i = Hitzeobjekt.getRedbox(); i < Hitzeobjekt.getVectorsize(); i++)
+	{
+		//Zum malen der Ränder
+		fillRect.x = Hitzeobjekt.getXVector(i);
+		fillRect.y = Hitzeobjekt.getYVector(i);
+		fillRect.w = (Hitzeobjekt.getBreite())/5;
+		fillRect.h = (Hitzeobjekt.getBreite())/5;
+		SDL_SetRenderDrawColor( Viewobjekt.oRenderer, 0x00, 0x00, 0x00, 0xFF );		
+		SDL_RenderFillRect( Viewobjekt.oRenderer, &fillRect );
+	}
+}

@@ -13,12 +13,14 @@ private:
 	bool quit;
 	int t;
 	bool gedrueckt;
-	float startzeit;
+	double startzeit;
+	double Zeit_Vor_Berechnung;
+	double Gesamtzeit;
 	//Event handler
 	SDL_Event e;
 	SDL_Rect fillRect;
 
-	void Mainloop(CView &Viewobjekt, float KaestchenXundY);
+	void Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseiten);
 
 	//Löscht das gerenderte Bild
 	void ErasePicture(SDL_Renderer *Renderer);

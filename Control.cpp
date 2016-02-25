@@ -98,15 +98,9 @@ void CControl::Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseit
 				}
 			}
 		}
-
-		f.open("test.dat", ios::app);
-		f << t << "\t\t";
-		f.close();	
-	
-		Zeit_Vor_Berechnung = omp_get_wtime() - startzeit;
 		
-		//if(t%25 == 0)
-		//{
+		if(t%25 == 0)
+		{
 			//Übermalen des letzten Bildes
 			ErasePicture(Viewobjekt.oRenderer);
 
@@ -114,7 +108,12 @@ void CControl::Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseit
 
 			//Update des Bildschirms
 			SDL_RenderPresent( Viewobjekt.oRenderer );
-		//}
+		}
+
+		f.open("test.dat", ios::app);
+		f << t << "\t\t";
+		f.close();		
+		Zeit_Vor_Berechnung = omp_get_wtime() - startzeit;
 
 		Hitzeobjekt.Newvalue(Kaestchenanzahl_der_Quadratseiten);	
 		
@@ -123,7 +122,7 @@ void CControl::Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseit
 		f << Gesamtzeit << endl;
 		f.close();
 
-		if(t == 1000)
+		if(t == 200)
 		{
 			quit = true;
 		}

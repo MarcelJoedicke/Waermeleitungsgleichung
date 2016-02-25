@@ -8,13 +8,13 @@ int main( int argc, char* args[] )
 	CView Viewobjekt = CView();
 	Viewobjekt.Initialize();
 
-	int Kaestchenanzahl_der_Quadratseiten = 101;
+	int Kaestchenanzahl_der_Quadratseiten = 251;
 	int Kaestchenbreite = 6;
 	float Waermeausbreitung = 0.05;
 	float Maxtemp = 255;
 
 	CControl Kontrollobjekt(Viewobjekt.SCREEN_WIDTH, Viewobjekt.SCREEN_HEIGHT, Kaestchenanzahl_der_Quadratseiten, Kaestchenbreite, Waermeausbreitung, Maxtemp);
-	Kontrollobjekt.handle(Viewobjekt, Kaestchenanzahl);
+	Kontrollobjekt.handle(Viewobjekt, Kaestchenanzahl_der_Quadratseiten);
 
 	return 0;
 }

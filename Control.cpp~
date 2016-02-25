@@ -123,7 +123,7 @@ void CControl::Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseit
 		f << Gesamtzeit << endl;
 		f.close();
 
-		if(t == 1000)
+		if(t == 200)
 		{
 			quit = true;
 		}

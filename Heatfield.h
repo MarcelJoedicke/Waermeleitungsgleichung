@@ -38,15 +38,15 @@ private:
 	int position;
 	int Token;
 
-	void initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY);
-	void Calculate(vector<sKaestchen> &Kasten, float KaestchenXundY, vector<sKaestchen> &andererKasten);
+	void initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchenanzahl_der_Quadratseiten);
+	void Calculate(vector<sKaestchen> &Kasten, float Kaestchenanzahl_der_Quadratseiten, vector<sKaestchen> &andererKasten);
 	void showvalues(vector<sKaestchen> &Kasten);
 
 public:
 	CHeatfield();
-	CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY, int Kaestchenbreite, float Waermeausbreitung, float Toptemp);
+	CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchenanzahl_der_Quadratseiten, int Kaestchenbreite, float Waermeausbreitung, float Toptemp);
 	~CHeatfield(void);
-	void Newvalue(float KaestchenXundY);
+	void Newvalue(float Kaestchenanzahl_der_Quadratseiten);
 
 	int getVectorsize();
 	int getRedbox();

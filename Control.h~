@@ -1,6 +1,7 @@
 #pragma once
 
 #include <omp.h>
+#include <fstream>
 #include <SDL.h>
 #include "View.h"
 #include "Heatfield.h"
@@ -12,6 +13,9 @@ private:
 	bool quit;
 	int t;
 	bool gedrueckt;
+	double startzeit;
+	double Zeit_Vor_Berechnung;
+	double Gesamtzeit;
 	//Event handler
 	SDL_Event e;
 	SDL_Rect fillRect;

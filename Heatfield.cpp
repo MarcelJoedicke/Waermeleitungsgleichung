@@ -21,7 +21,7 @@ CHeatfield::CHeatfield()
 	Elementehintereinanderobenrechts = 100-Elementehintereinanderobenlinks;
 }
 
-CHeatfield::CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY, int Kaestchenbreite, float Waermeausbreitung, float Toptemp)
+CHeatfield::CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchenanzahl_der_Quadratseiten, int Kaestchenbreite, float Waermeausbreitung, float Toptemp)
 {
 	Redbox=0;
 	Kastenstruct.X = 0;
@@ -34,9 +34,9 @@ CHeatfield::CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY
 	{
 		Breite = Kaestchenbreite;
 	}
-	if(static_cast<int> (KaestchenXundY) % 2 == 0) // Wenn die Kaestchenanzahl gerade ist, wird eine 1 aufaddiert um sie ungerade zu machen.
+	if(static_cast<int> (Kaestchenanzahl_der_Quadratseiten) % 2 == 0) // Wenn die Kaestchenanzahl gerade ist, wird eine 1 aufaddiert um sie ungerade zu machen.
 	{
-		KaestchenXundY = KaestchenXundY + 1; //Es wird nur eine ungerade Menge an Kaestchen erlaubt, damit man immer eine Mitte hat.
+		Kaestchenanzahl_der_Quadratseiten = Kaestchenanzahl_der_Quadratseiten + 1; //Es wird nur eine ungerade Menge an Kaestchen erlaubt, damit man immer eine Mitte hat.
 	}
 		
 
@@ -46,12 +46,12 @@ CHeatfield::CHeatfield(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY
 	Waermeausbreitungsgradient = Waermeausbreitung;
 	heisseste_temp=Toptemp;
 
-	AndereKaestchen = (KaestchenXundY - 1)/2; // ist die Anzahl der Kästchen links bzw. rechts von der Mitte
+	AndereKaestchen = (Kaestchenanzahl_der_Quadratseiten - 1)/2; // ist die Anzahl der Kästchen links bzw. rechts von der Mitte
 	Subtraktionstemp = -(heisseste_temp/AndereKaestchen); //Die Temperatur die die anderen Kästchen abgezogen bekommen abseits der Mitte
-	Mittelwert = KaestchenXundY/2+0.5; //Kaestchen der Mitte
-	Elementehintereinanderobenlinks = KaestchenXundY/2+0.5; //Wie viele Kaestchen im oberen linken Bereich 
-	Elementehintereinanderobenrechts = KaestchenXundY-Elementehintereinanderobenlinks; //Wie viele Kästchen im oberen Rechten Bereich
-	initialize(SCREEN_WIDTH, SCREEN_HEIGHT, KaestchenXundY);
+	Mittelwert = Kaestchenanzahl_der_Quadratseiten/2+0.5; //Kaestchen der Mitte
+	Elementehintereinanderobenlinks = Kaestchenanzahl_der_Quadratseiten/2+0.5; //Wie viele Kaestchen im oberen linken Bereich 
+	Elementehintereinanderobenrechts = Kaestchenanzahl_der_Quadratseiten-Elementehintereinanderobenlinks; //Wie viele Kästchen im oberen Rechten Bereich
+	initialize(SCREEN_WIDTH, SCREEN_HEIGHT, Kaestchenanzahl_der_Quadratseiten);
 }
 
 
@@ -59,14 +59,14 @@ CHeatfield::~CHeatfield(void)
 {
 }
 
-void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY)
+void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchenanzahl_der_Quadratseiten)
 {
-	for(int y=0; y< ((KaestchenXundY*(Breite+Breite/5))+1); y++)
+	for(int y=0; y< ((Kaestchenanzahl_der_Quadratseiten*(Breite+Breite/5))+1); y++)
 	{
-		for(int x=0;x< ((KaestchenXundY*(Breite+Breite/5))+1); x++)
+		for(int x=0;x< ((Kaestchenanzahl_der_Quadratseiten*(Breite+Breite/5))+1); x++)
 		{
 			//Für die Kaestchen in SDL
-			if((x == (KaestchenXundY*(Breite+Breite/5))) || (y == (KaestchenXundY*(Breite+Breite/5)))) // Korrekturwert, damit er zum Schluss außerhalb des Feldes kein neues Kästchen zeichnet, aber die Aussenumrandung
+			if((x == (Kaestchenanzahl_der_Quadratseiten*(Breite+Breite/5))) || (y == (Kaestchenanzahl_der_Quadratseiten*(Breite+Breite/5)))) // Korrekturwert, damit er zum Schluss außerhalb des Feldes kein neues Kästchen zeichnet, aber die Aussenumrandung
 			{}
 			else if (x%(Breite+Breite/5)== 0 && y%(Breite+Breite/5) == 0)
 			{
@@ -88,9 +88,9 @@ void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchen
 		}
 	}
 	
-	for(int y=0; y <= KaestchenXundY-1 ; y++)
+	for(int y=0; y <= Kaestchenanzahl_der_Quadratseiten-1 ; y++)
 	{
-		for( int x=0; x <= KaestchenXundY-1; x++)
+		for( int x=0; x <= Kaestchenanzahl_der_Quadratseiten-1; x++)
 		{
 			Kastenstruct.X = x;
 			Kastenstruct.Y = y;
@@ -100,12 +100,12 @@ void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchen
 			{}
 			else
 			{
-				if(Kastenstruct.Y == 0 || Kastenstruct.Y == KaestchenXundY-1) //die Raender werden 0 gesetzt 0-e stelle und letzte stelle von y
+				if(Kastenstruct.Y == 0 || Kastenstruct.Y == Kaestchenanzahl_der_Quadratseiten-1) //die Raender werden 0 gesetzt 0-e stelle und letzte stelle von y
 				{
 					Kastenstruct.Wert = 0.0;
 				}
 			
-				else if(Kastenstruct.X == 0 || Kastenstruct.X == KaestchenXundY-1) //die Raender von x achse werden 0 gesetzt
+				else if(Kastenstruct.X == 0 || Kastenstruct.X == Kaestchenanzahl_der_Quadratseiten-1) //die Raender von x achse werden 0 gesetzt
 				{
 					Kastenstruct.Wert = 0.0;
 				}
@@ -159,7 +159,7 @@ void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchen
 		//Zum bestimmen der Werte von oben rechts im Feld
 		if((Tempvektor.at(x).X < Mittelwert-1) && (Tempvektor.at(x).Y < Mittelwert-1))
 		{
-			Kastenstruct.X = (KaestchenXundY-1) - Tempvektor.at(x).X;			
+			Kastenstruct.X = (Kaestchenanzahl_der_Quadratseiten-1) - Tempvektor.at(x).X;			
 			Kastenstruct.Y = Tempvektor.at(x).Y;	
 			Kastenstruct.Wert = Tempvektor.at(x).Wert;	
 			Vektorobenrechts.insert(Vektorobenrechts.begin(),Kastenstruct);
@@ -167,7 +167,7 @@ void CHeatfield::initialize(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchen
 		//Zum bestimmen der Werte unten links im Feld
 		else if((Tempvektor.at(x).X > Mittelwert-1) && (Tempvektor.at(x).Y > Mittelwert-1)) 
 		{
-			Kastenstruct.X = (KaestchenXundY-1) - Tempvektor.at(x).X;
+			Kastenstruct.X = (Kaestchenanzahl_der_Quadratseiten-1) - Tempvektor.at(x).X;
 			Kastenstruct.Y = Tempvektor.at(x).Y;
 			Kastenstruct.Wert = Tempvektor.at(x).Wert;	
 			Vektoruntenlinks.insert(Vektoruntenlinks.begin(),Kastenstruct);
@@ -263,30 +263,30 @@ int CHeatfield::getBreite()
 	return Breite;
 }
 
-void CHeatfield::Newvalue(float KaestchenXundY)
+void CHeatfield::Newvalue(float Kaestchenanzahl_der_Quadratseiten)
 {
 	if(Token == true)
 	{
 		m_vKastenvektornew = m_vKastenvektor;
-		Calculate(m_vKastenvektornew, KaestchenXundY, m_vKastenvektor);
+		Calculate(m_vKastenvektornew, Kaestchenanzahl_der_Quadratseiten, m_vKastenvektor);
 
 	}
 	else
 	{
 		m_vKastenvektor = m_vKastenvektornew;
-		Calculate(m_vKastenvektor,KaestchenXundY, m_vKastenvektornew);
+		Calculate(m_vKastenvektor,Kaestchenanzahl_der_Quadratseiten, m_vKastenvektornew);
 	}
 }
 
-void CHeatfield::Calculate(vector<sKaestchen> &Kasten, float KaestchenXundY, vector<sKaestchen> &andererKasten)
+void CHeatfield::Calculate(vector<sKaestchen> &Kasten, float Kaestchenanzahl_der_Quadratseiten, vector<sKaestchen> &andererKasten)
 {
 	#pragma omp parallel for
 	for(int x = 0; x < Redbox; x++)
 	{
 		if( (andererKasten.at(x).Y == Breite/5) || //Wenn Y unten unter dem Rand, X egal
 			(andererKasten.at(x).X == Breite/5) || //Wenn X rechts neben dem Rand, Y egal
-			(andererKasten.at(x).X == (Breite/5 + ((KaestchenXundY-1) * (Breite+Breite/5)))) || // Breite/5 ist der äußere Rand, um zum Kaestchen rechts oder ganz unten zu kommen muss man die Anzahl der (Kästchen - 1 * der Breite der Kästchen Rechnen. Da es auch Ränder gibt, muss man diese in die Rechnung einbauen, daher Kästchen - 1 * (Breite + Breite/5). Also X ganz rechts das Kästchen, Y ist egal
-			(andererKasten.at(x).Y == (Breite/5 + ((KaestchenXundY-1) * (Breite+Breite/5)))) // Y ganz unten, X ist egal 
+			(andererKasten.at(x).X == (Breite/5 + ((Kaestchenanzahl_der_Quadratseiten-1) * (Breite+Breite/5)))) || // Breite/5 ist der äußere Rand, um zum Kaestchen rechts oder ganz unten zu kommen muss man die Anzahl der (Kästchen - 1 * der Breite der Kästchen Rechnen. Da es auch Ränder gibt, muss man diese in die Rechnung einbauen, daher Kästchen - 1 * (Breite + Breite/5). Also X ganz rechts das Kästchen, Y ist egal
+			(andererKasten.at(x).Y == (Breite/5 + ((Kaestchenanzahl_der_Quadratseiten-1) * (Breite+Breite/5)))) // Y ganz unten, X ist egal 
 		  )
 		{
 			Kasten.at(x).Wert = 0;
@@ -296,7 +296,7 @@ void CHeatfield::Calculate(vector<sKaestchen> &Kasten, float KaestchenXundY, vec
 		{
 		//Alles was nicht Rand ist, erhält einen Wert
 			Kasten.at(x).Wert = andererKasten.at(x).Wert + Waermeausbreitungsgradient * (andererKasten.at(x+1).Wert + andererKasten.at(x-1).Wert - 2 * andererKasten.at(x).Wert)
-													+ Waermeausbreitungsgradient * (andererKasten.at(x + KaestchenXundY).Wert + andererKasten.at(x - KaestchenXundY).Wert - 2 * andererKasten.at(x).Wert);
+													+ Waermeausbreitungsgradient * (andererKasten.at(x + Kaestchenanzahl_der_Quadratseiten).Wert + andererKasten.at(x - Kaestchenanzahl_der_Quadratseiten).Wert - 2 * andererKasten.at(x).Wert);
 		}
 	}
 	Token = !Token;

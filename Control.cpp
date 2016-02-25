@@ -1,7 +1,7 @@
 #include "Control.h"
 
 
-CControl::CControl(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY, int Kaestchenbreite,  float Waermeausbreitung, float Toptemp) : Hitzeobjekt(SCREEN_WIDTH, SCREEN_HEIGHT, KaestchenXundY, Kaestchenbreite, Waermeausbreitung, Toptemp)
+CControl::CControl(int SCREEN_WIDTH, int SCREEN_HEIGHT, float Kaestchenanzahl_der_Quadratseiten, int Kaestchenbreite,  float Waermeausbreitung, float Toptemp) : Hitzeobjekt(SCREEN_WIDTH, SCREEN_HEIGHT, Kaestchenanzahl_der_Quadratseiten, Kaestchenbreite, Waermeausbreitung, Toptemp)
 {
 	t=0;
 	quit = false;
@@ -11,6 +11,8 @@ CControl::CControl(int SCREEN_WIDTH, int SCREEN_HEIGHT, float KaestchenXundY, in
 	fillRect.w=0;
 	gedrueckt = false;
 	startzeit = omp_get_wtime();
+	Zeit_Vor_Berechnung = 0;
+	Gesamtzeit = 0;
 }
 
 
@@ -18,18 +20,19 @@ CControl::~CControl(void)
 {
 }
 
-void CControl::handle(CView &Viewobjekt, float KaestchenXundY)
+void CControl::handle(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseiten)
 {
-	Mainloop(Viewobjekt, KaestchenXundY);
+	Mainloop(Viewobjekt, Kaestchenanzahl_der_Quadratseiten);
 }
 
-void CControl::Mainloop(CView &Viewobjekt, float KaestchenXundY)
+void CControl::Mainloop(CView &Viewobjekt, float Kaestchenanzahl_der_Quadratseiten)
 {
 
     fstream f;
     f.open("test.dat", ios::out);
-    f << "Start Rechnung\t\tEnde Rechnung" << endl;
+    f << "t\t\tBerechnungsdauer" << endl;
     f.close();
+
 
 	//Solange die Applikation läuft
 	while( !quit )
@@ -95,6 +98,12 @@ void CControl::Mainloop(CView &Viewobjekt, float KaestchenXundY)
 				}
 			}
 		}
+
+		f.open("test.dat", ios::app);
+		f << t << "\t\t";
+		f.close();	
+	
+		Zeit_Vor_Berechnung = omp_get_wtime() - startzeit;
 		
 		if(t%25 == 0)
 		{
@@ -106,18 +115,15 @@ void CControl::Mainloop(CView &Viewobjekt, float KaestchenXundY)
 			//Update des Bildschirms
 			SDL_RenderPresent( Viewobjekt.oRenderer );
 		}
-		
-		f.open("test.dat", ios::app);
-		f << omp_get_wtime() - startzeit << "\t\t";
-		f.close();		
 
-		Hitzeobjekt.Newvalue(KaestchenXundY);	
+		Hitzeobjekt.Newvalue(Kaestchenanzahl_der_Quadratseiten);	
 		
+		Gesamtzeit = Gesamtzeit + (omp_get_wtime() - startzeit - Zeit_Vor_Berechnung);
 		f.open("test.dat", ios::app);
-		f << omp_get_wtime() - startzeit << endl;
+		f << Gesamtzeit << endl;
 		f.close();
 
-		if(t == 1000)
+		if(t == 200)
 		{
 			quit = true;
 		}

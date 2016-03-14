@@ -13,6 +13,9 @@ RUN apt-get install -y git
 #Installieren der ganzen SDL sachen
 RUN apt-get install -y libsdl2-image-dev && apt-get install -y libsdl2-dev
 
+#Installation von GNU Make für das Makefile
+Run apt-get install -y make
+
 #Zur Ausführung von der Waermeleitungsgleichung, muss ich danach zuerst das repo ziehen dafür brauche ich evtl. den Token (lange Zahl da vor dem Doppelpunkt. Hinten kommt die Installationslokation
 #RUN git clone -b docker https://4367027f94c72935b64cbd45e846e765899fbc2e:marcelmaxjoedicke@github.com/MarcelJoedicke/Hallo.git /myapp/
 RUN git clone https://github.com/MarcelJoedicke/Waermeleitungsgleichung.git
